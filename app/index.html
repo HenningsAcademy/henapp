@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hennings Academy - Acesso</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 
+                        navy: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }, 
+                        mustard: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' } 
+                    },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards', 
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'blob': 'blob 10s infinite alternate'
+                    },
+                    keyframes: { 
+                        fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } }, 
+                        slideUp: { '0%': { opacity: 0, transform: 'translateY(40px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; overflow: hidden; }
+        
+        .parallax-element {
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 6px; } 
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; } 
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-gray-300 antialiased h-screen flex flex-col selection:bg-mustard-500 selection:text-navy-950">
+
+    <!-- LUZES AMBIENTAIS DE FUNDO (Estilo Apple / Glassmorphism) -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <!-- Mancha Azul -->
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[120px] opacity-80 animate-blob"></div>
+        <!-- Mancha Amarela -->
+        <div class="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-mustard-500/20 rounded-full mix-blend-screen filter blur-[120px] opacity-80 animate-blob" style="animation-delay: 2s;"></div>
+        <!-- Mancha Azul Escuro Base -->
+        <div class="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] bg-blue-800/20 rounded-full mix-blend-screen filter blur-[120px] opacity-80 animate-blob" style="animation-delay: 4s;"></div>
+        <!-- Textura Pontilhada Suave -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-30 mix-blend-overlay"></div>
+    </div>
+
+    <!-- OVERLAY DE CARREGAMENTO -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-navy-950/60 z-[999] flex flex-col items-center justify-center hidden backdrop-blur-xl transition-all duration-500">
+        <div class="bg-navy-900/50 p-8 rounded-3xl border border-white/10 flex flex-col items-center shadow-2xl">
+            <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-mustard-500 mb-4"></i>
+            <h2 id="loadingText" class="text-sm font-bold tracking-widest uppercase text-white">Validando Acesso...</h2>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TELA DE LOGIN -->
+    <!-- ========================================== -->
+    <div id="login-view" class="flex-1 flex w-full h-full items-center justify-center relative z-10 p-4">
+        
+        <!-- Coluna Esquerda: A Imagem Parallax -->
+        <div class="hidden md:flex w-1/2 items-center justify-center relative z-20 perspective-[1000px] overflow-hidden">
+            <div id="parallax-container" class="w-full h-full flex items-center justify-center relative">
+                <div class="absolute w-[400px] h-[400px] bg-blue-600/10 rounded-full filter blur-[100px]"></div>
+                <img src="assets/nosso-futuro.png" alt="#NossoFuturoHennings" id="parallax-img" class="parallax-element max-w-[70%] lg:max-w-[60%] relative z-10 drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)]">
+            </div>
+        </div>
+
+        <!-- Coluna Direita: O Formulário Glassmorphism -->
+        <div class="w-full md:w-1/2 flex items-center justify-center p-6 relative z-20 animate-slide-up">
+            
+            <!-- Cartão Principal Efeito Vidro -->
+            <div class="bg-navy-900/40 backdrop-blur-2xl w-full max-w-[420px] p-10 lg:p-12 rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden">
+                
+                <!-- Brilho no topo do card para dar volume -->
+                <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+
+                <!-- Logo & Subtítulo -->
+                <div class="text-center mb-10">
+                    <img src="assets/logo.png" alt="Hennings Academy" class="h-8 mx-auto mb-3 relative z-10 drop-shadow-md" onerror="this.outerHTML='<h1 class=&quot;text-2xl font-black text-white mb-2&quot;>HENNINGS<span class=&quot;text-mustard-500&quot;>ACADEMY</span></h1>';">
+                    <p class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em] relative z-10">Portal Operacional</p>
+                </div>
+                
+                <!-- Alerta de Erro -->
+                <div id="loginError" class="hidden w-full mb-6 bg-rose-500/20 border border-rose-500/50 text-rose-300 p-3 rounded-2xl text-center text-sm font-bold flex items-center justify-center gap-2 backdrop-blur-md">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i> Acesso Negado
+                </div>
+                
+                <!-- Formulário -->
+                <form id="loginForm" onsubmit="realizarLogin(event)" class="w-full space-y-5 relative z-10">
+                    
+                    <!-- Input Usuário -->
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i data-lucide="user" class="w-5 h-5 text-gray-500 group-focus-within:text-mustard-400 transition-colors"></i>
+                        </div>
+                        <input type="text" id="username" required autocomplete="off" placeholder="Usuário" 
+                            class="w-full bg-white/5 border border-white/10 text-white rounded-2xl pl-12 pr-6 py-4 text-sm outline-none transition-all duration-300 placeholder-gray-500 backdrop-blur-md focus:bg-white/10 focus:border-mustard-500/50 focus:shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+                    </div>
+                    
+                    <!-- Input Senha -->
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i data-lucide="lock" class="w-5 h-5 text-gray-500 group-focus-within:text-mustard-400 transition-colors"></i>
+                        </div>
+                        <input type="password" id="password" required placeholder="Senha" 
+                            class="w-full bg-white/5 border border-white/10 text-white rounded-2xl pl-12 pr-6 py-4 text-sm outline-none transition-all duration-300 placeholder-gray-500 backdrop-blur-md focus:bg-white/10 focus:border-mustard-500/50 focus:shadow-[0_0_20px_rgba(245,158,11,0.15)] tracking-widest">
+                    </div>
+                    
+                    <!-- Botão -->
+                    <div class="pt-4 flex justify-center">
+                        <button type="submit" class="w-full bg-gradient-to-r from-mustard-500 to-mustard-400 text-navy-950 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[0_10px_30px_-10px_rgba(245,158,11,0.5)] flex items-center justify-center gap-2">
+                            Entrar no Sistema <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-10 text-center relative z-10 border-t border-white/5 pt-6">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.1em]">Secure Access • Microsoft 365 Cloud</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL DE REGRAS (Primeiro Acesso)          -->
+    <!-- ========================================== -->
+    <div id="modalRules" class="fixed inset-0 bg-navy-950/80 z-50 hidden flex-col items-center justify-end md:justify-center p-0 md:p-4 backdrop-blur-xl transition-all animate-fade-in">
+        <div class="bg-navy-900/80 backdrop-blur-2xl rounded-t-[2.5rem] md:rounded-[2.5rem] border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-slide-up relative">
+            
+            <!-- Glow Effect Modal -->
+            <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-mustard-500/50 to-transparent"></div>
+
+            <div class="p-8 pb-4 flex justify-between items-center border-b border-white/5">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-mustard-500/20 rounded-2xl border border-mustard-500/30"><i data-lucide="book-open-check" class="text-mustard-500 w-6 h-6"></i></div>
+                    <h2 class="text-xl font-bold text-white tracking-wide">Termos de Operação</h2>
+                </div>
+            </div>
+            
+            <div class="p-8 overflow-y-auto custom-scroll text-gray-300 space-y-6 flex-1" id="rulesContent">
+                <!-- Conteúdo Injetado via JS -->
+            </div>
+            
+            <div class="p-6 bg-black/20 border-t border-white/5 flex justify-end">
+                <button onclick="aceitarRegrasERedirecionar()" class="w-full md:w-auto bg-white text-navy-950 hover:bg-gray-200 font-bold px-10 py-4 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
+                    Compreendido <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EFEITO PARALLAX E LÓGICA DO LOGIN -->
+    <script>
+        lucide.createIcons();
+
+        // --- 1. EFEITO PARALLAX DO MOUSE ---
+        document.addEventListener('mousemove', (e) => {
+            const img = document.getElementById('parallax-img');
+            if(!img) return;
+
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const mouseX = e.clientX - centerX;
+            const mouseY = e.clientY - centerY;
+
+            const moveX = (mouseX / 40) * -1;
+            const moveY = (mouseY / 40) * -1;
+
+            img.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+
+        // --- 2. LÓGICA DE LOGIN (Nativa para EXCEL via Power Automate) ---
+        const URL_LER_SHAREPOINT = "https://default863b40a279194b128e0e7678554bee.21.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/21/workflows/3068ae606a9d47c4967b39b43e2f157f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=vnTdxDEE1wSXgDnHWTgIVh-WIuVifc8RLNbj7Y4xTtw";
+        
+        let usuarioValidado = null;
+
+        // CHAVES MESTRAS INQUEBRÁVEIS (Fallback de emergência)
+        const testUsers = [
+            { id: '4dm1n', pass: 'Henn1gs4cad3m1', name: 'Master Admin', role: 'Admin' },
+            { id: 'f4c1l1t4d0r', pass: 'F4c!l1t@d0r_H#26', name: 'Facilitador Teste', role: 'Facilitador' },
+            { id: 'l1d3r', pass: 'L1d3r@Henn!ngs$26', name: 'Líder Teste', role: 'Lider' }
+        ];
+
+        function showLoad(msg) { 
+            document.getElementById('loadingText').innerText = msg; 
+            document.getElementById('loadingOverlay').classList.remove('hidden'); 
+            document.getElementById('loadingOverlay').classList.add('flex');
+        }
+        function hideLoad() { 
+            document.getElementById('loadingOverlay').classList.add('hidden'); 
+            document.getElementById('loadingOverlay').classList.remove('flex');
+        }
+
+        async function realizarLogin(e) {
+            e.preventDefault();
+            const uInput = document.getElementById('username').value.trim().toLowerCase();
+            const pInput = document.getElementById('password').value.trim();
+            const errorBox = document.getElementById('loginError');
+
+            // 1. CHECAGEM DAS CHAVES MESTRAS PRIMEIRO (Ignora a nuvem se for uma dessas)
+            const masterMatch = testUsers.find(u => u.id.toLowerCase() === uInput && u.pass === pInput);
+            if(masterMatch) {
+                processarAcesso(masterMatch);
+                return;
+            }
+
+            showLoad("Consultando Banco de Dados no SharePoint...");
+
+            try {
+                const res = await fetch(URL_LER_SHAREPOINT);
+                if(!res.ok) throw new Error("Erro de conexão com o servidor Power Automate");
+                const data = await res.json();
+                
+                // Función segura para leer propiedades evitando que el "0" desaparezca
+                const getValSeguro = (obj, posiblesKeys) => {
+                    for (let key of posiblesKeys) {
+                        if (obj[key] !== undefined && obj[key] !== null) return obj[key];
+                    }
+                    return '';
+                };
+
+                // MAPEAMENTO EXATO DO EXCEL (Lendo ID_User, Senha, Nome, Role)
+                const usuarios = (data.usuarios || []).map(u => ({
+                    id: getValSeguro(u, ['ID_User', 'usuario']).toString().trim(),
+                    pass: getValSeguro(u, ['Senha', 'senha']).toString().trim(),
+                    name: getValSeguro(u, ['Nome', 'nome']).toString(),
+                    role: getValSeguro(u, ['Role', 'cargo', 'permissoes']).toString()
+                }));
+
+                const match = usuarios.find(x => x.id.toLowerCase() === uInput && x.pass === pInput);
+
+                if(match) {
+                    processarAcesso(match);
+                } else {
+                    hideLoad();
+                    errorBox.classList.remove('hidden');
+                    errorBox.classList.add('animate-pulse');
+                    setTimeout(() => errorBox.classList.remove('animate-pulse'), 1000);
+                }
+            } catch (err) {
+                console.error("Erro na leitura da nuvem:", err);
+                hideLoad();
+                alert("Erro de servidor. Verifique o fluxo no Power Automate ou use a Chave Mestra em caso de emergência.");
+            }
+        }
+
+        function processarAcesso(userObj) {
+            hideLoad();
+            usuarioValidado = userObj;
+            
+            sessionStorage.setItem('ha_user_id', userObj.id);
+            sessionStorage.setItem('ha_user_name', userObj.name);
+            sessionStorage.setItem('ha_user_role', userObj.role);
+
+            const primeiroAcessoFeito = localStorage.getItem(`regras_aceitas_${userObj.id}`);
+
+            if(!primeiroAcessoFeito && userObj.role !== 'Admin') {
+                mostrarRegras(userObj.role);
+            } else {
+                redirecionarParaApp(userObj.role);
+            }
+        }
+
+        function mostrarRegras(role) {
+            const content = document.getElementById('rulesContent');
+            
+            if (role === 'Facilitador') {
+                content.innerHTML = `
+                    <div class="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-xl mb-4">
+                        <h3 class="text-indigo-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Prazos de Execução</h3>
+                        <p class="text-sm text-indigo-200/70 leading-relaxed">Todo treinamento possui um ciclo máximo de <span class="text-white font-bold">15 dias de treino + 1 dia de acompanhamento</span>.</p>
+                    </div>
+                    <div class="bg-mustard-500/10 border border-mustard-500/20 p-4 rounded-xl mb-4">
+                        <h3 class="text-mustard-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="award" class="w-4 h-4"></i> Avaliação DHO</h3>
+                        <p class="text-sm text-mustard-200/70 leading-relaxed">A nota mínima para aprovação é <span class="text-white font-bold">70 pontos</span>. O sistema permite um limite técnico de 3 tentativas por colaborador.</p>
+                    </div>
+                    <div class="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl">
+                        <h3 class="text-rose-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4"></i> Auditoria de Qualidade</h3>
+                        <p class="text-sm text-rose-200/70 leading-relaxed">A Incubadora assinada fisicamente (PDF) é um documento auditável e <span class="text-white font-bold">obrigatório</span> para o encerramento do processo no sistema.</p>
+                    </div>`;
+            } else { 
+                content.innerHTML = `
+                    <div class="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-xl mb-4">
+                        <h3 class="text-indigo-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Limites de Solicitação</h3>
+                        <p class="text-sm text-indigo-200/70 leading-relaxed">O sistema limita o número de processos de <span class="text-white font-bold">"Troca de Área"</span> a um máximo de 5 requisições simultâneas por Líder para garantir a fluidez da operação.</p>
+                    </div>
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl mb-4">
+                        <h3 class="text-emerald-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="calendar-check" class="w-4 h-4"></i> Agendamentos</h3>
+                        <p class="text-sm text-emerald-200/70 leading-relaxed">Fique atento à sua caixa de <span class="text-white font-bold">Aprovações</span>. Os facilitadores sugerirão datas para acompanhamento que requerem seu aceite digital.</p>
+                    </div>
+                    <div class="bg-mustard-500/10 border border-mustard-500/20 p-4 rounded-xl">
+                        <h3 class="text-mustard-400 font-bold mb-1 flex items-center gap-2"><i data-lucide="clipboard-signature" class="w-4 h-4"></i> Validação Final</h3>
+                        <p class="text-sm text-mustard-200/70 leading-relaxed">A aptidão do colaborador só será oficialmente reconhecida após a sua <span class="text-white font-bold">Validação Prática</span> no painel da liderança.</p>
+                    </div>`;
+            }
+            lucide.createIcons();
+            document.getElementById('modalRules').classList.remove('hidden');
+            document.getElementById('modalRules').classList.add('flex');
+        }
+
+        function aceitarRegrasERedirecionar() {
+            localStorage.setItem(`regras_aceitas_${usuarioValidado.id}`, 'true');
+            document.getElementById('modalRules').classList.add('hidden');
+            document.getElementById('modalRules').classList.remove('flex');
+            redirecionarParaApp(usuarioValidado.role);
+        }
+
+        function redirecionarParaApp(role) {
+            showLoad("Iniciando Módulos...");
+            setTimeout(() => {
+                if(role === 'Admin') window.location.href = 'admin.html';
+                else if(role === 'Facilitador') window.location.href = 'facilitador.html';
+                else window.location.href = 'lider.html'; // "Supervisor" y "Lider" se redirigen a lider.html
+            }, 800);
+        }
+    </script>
+</body>
+</html>
